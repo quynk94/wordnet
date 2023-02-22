@@ -1,0 +1,2 @@
+class WordTag < ApplicationRecord
+end

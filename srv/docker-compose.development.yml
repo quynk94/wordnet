@@ -1,0 +1,74 @@
+version: '3.5'
+
+volumes:
+  gems_data:
+    name: wordnet_gems_development
+    driver: local
+
+  mysql_data:
+    name: wordnet_mysql_development
+    driver: local
+
+  redis_data:
+    name: wordnet_redis_development
+    driver: local
+
+networks:
+  global_development:
+    external: true
+
+services:
+  mysql:
+    container_name: wordnet_mysql_development
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - 5031:3307
+    environment:
+      - MYSQL_ROOT_PASSWORD=pwd123
+      - MYSQL_USER=playbook
+      - MYSQL_PASSWORD=nwsadmin
+      - MYSQL_DATABASE=wordnet_development
+
+  rails:
+    container_name: wordnet_rails_development
+    image: wordnetdevelopment_rails
+    depends_on:
+      - mysql
+      - sidekiq
+    volumes:
+      - gems_data:/ruby_gems
+    networks:
+      default:
+      global_development:
+    ports:
+      - 3030:3000
+    environment:
+      - RAILS_ENV=development
+    entrypoint: ./docker-entrypoint.sh
+    command: ["rails", "server", "-p", "3000", "-b", "0.0.0.0"]
+    tty: true
+    stdin_open: true
+
+  sidekiq:
+    container_name: wordnet_sidekiq_development
+    image: wordnetdevelopment_rails
+    depends_on:
+      - mysql
+      - redis
+    volumes:
+      - gems_data:/ruby_gems
+    networks:
+      default:
+      global_development:
+    environment:
+      - RAILS_ENV=development
+    entrypoint: ./docker-entrypoint.sh
+    command: ["sidekiq", "-C", "config/sidekiq.yml"]
+    tty: true
+    stdin_open: true
+
+  redis:
+    container_name: wordnet_redis_development
+    volumes:
+      - redis_data:/data

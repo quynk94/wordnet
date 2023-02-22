@@ -1,0 +1,8 @@
+database:
+  master:
+    host:           'mysql'
+    port:           '3307'
+default_url:
+  host:             'localhost:3000'
+redis:
+  endpoint:         'redis://redis:6379/0'

@@ -1,0 +1,34 @@
+version: '3.5'
+
+volumes:
+  git_ssh_key:
+    name: wordnet_git_ssh_key
+    driver: local
+
+services:
+  mysql:
+    image: mysql:8.0.32
+    volumes:
+      - ./config/mysql:/etc/mysql/conf.d
+      - ./config/mysql/initializers:/docker-entrypoint-initdb.d
+
+  rails:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+      - git_ssh_key:/root/.ssh
+
+  sidekiq:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+      - git_ssh_key:/root/.ssh
+
+  redis:
+    image: redis:7.0.8
+    sysctls:
+      - net.core.somaxconn=65535
