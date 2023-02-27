@@ -15,3 +15,8 @@
 * script/docker/setup.sh --ssh-key path_to_your_id_rsa_key
 * script/docker/start.sh
 * access http://localhost:3030
+
+## How to start generate grouping quiz
+
+* Import word: `bundle exec rake import_words:execute`
+* Generate quiz: `bundle exec rake generate_grouping:execute[5,3]` For generate 5 words belongs 2 groups with 3 minium distance

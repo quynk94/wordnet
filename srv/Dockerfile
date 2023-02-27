@@ -33,3 +33,8 @@ WORKDIR $APP_HOME
 EXPOSE 3030
 
 ENV BUNDLE_PATH /ruby_gems
+
+# Install nltk
+RUN apt-get install -y python3-pip
+RUN pip install nltk
+RUN python3 -c "import nltk; nltk.download('wordnet')"
